@@ -1,9 +1,11 @@
 from fastapi import FastAPI
-from services.weather import get_weather
 from core.logging import setup_log
+from models.weather import WeatherService
+from routers.weather import router as weather_router
 
 setup_log()
 app = FastAPI(title="Pepper Weather API", version="1.0.0")
+app.include_router(weather_router)
 
 
 @app.get("/health")
@@ -12,7 +14,6 @@ def health():
 
 
 if __name__ == "__main__":
-    import json
+    import uvicorn
 
-    data = get_weather("Rio de Janeiro")
-    print(json.dumps(data, indent=2, ensure_ascii=False))
+    uvicorn.run(app, host="0.0.0.0", port=8000)

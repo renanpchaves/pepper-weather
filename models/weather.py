@@ -1,11 +1,9 @@
 import os
 from dotenv import load_dotenv
 import requests
-from core.logging import setup_log
 import logging
 
 logger = logging.getLogger(__name__)
-setup_log()
 load_dotenv()
 
 
