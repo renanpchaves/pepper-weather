@@ -7,12 +7,6 @@ setup_log()
 app = FastAPI(title="Pepper Weather API", version="1.0.0")
 app.include_router(weather_router)
 
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-
 if __name__ == "__main__":
     import uvicorn
 

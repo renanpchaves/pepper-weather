@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 import requests
 import logging
+from core.exceptions import CityNotFound
+
 
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -43,6 +45,10 @@ class WeatherService:
                     "lang": "pt_br",
                 },
             )
+            if response.status_code == 404:
+                logger.error(f"❌ City not found: {city}")
+                raise CityNotFound(f"City not found: {city}")
+
             response.raise_for_status()
             return response.json()
 

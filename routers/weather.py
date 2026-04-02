@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from models.weather import WeatherService
 from models.weather_schema import WeatherData
+from core.exceptions import CityNotFound
+
 
 router = APIRouter(prefix="/weather", tags=["Weather"])
 service = WeatherService()
@@ -23,5 +25,7 @@ def get_weather(city: str):
             city_name=data["name"],
             country_code=data["sys"]["country"],
         )
+    except CityNotFound as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
