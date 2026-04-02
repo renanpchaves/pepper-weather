@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from models.weather import WeatherService
-from models.weather_schema import WeatherData
-from core.exceptions import CityNotFound
+from backend.models.weather import WeatherService
+from backend.schema.weather_schema import WeatherData
+from backend.core.exceptions import CityNotFound
 
 
 router = APIRouter(prefix="/weather", tags=["Weather"])
@@ -22,6 +22,7 @@ def get_weather(city: str):
             pressure=data["main"]["pressure"],
             wind_speed=data["wind"]["speed"],
             weather_description=data["weather"][0]["description"],
+            icon=data["weather"][0]["icon"],
             city_name=data["name"],
             country_code=data["sys"]["country"],
         )

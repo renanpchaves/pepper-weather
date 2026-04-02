@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import requests
 import logging
-from core.exceptions import CityNotFound
+from backend.core.exceptions import CityNotFound
 
 
 logger = logging.getLogger(__name__)
