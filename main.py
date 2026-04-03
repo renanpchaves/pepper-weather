@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from backend.core.logging import setup_log
 from backend.routers.weather import router as weather_router
 
@@ -14,6 +15,9 @@ app.add_middleware(
 )
 
 app.include_router(weather_router)
+
+# Serve frontend — must come after all API routers
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
