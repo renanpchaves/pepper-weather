@@ -1,7 +1,6 @@
 // Derives base URL from the current origin — works on localhost and production without changes
 const API_BASE = window.location.origin;
-// When the cities router is ready, autocomplete will hit: GET /cities?q={query}
-// Expected response: [{ name, country, state }]
+// GET /cities?q={query} — min 3 chars, returns [{ name, lat, lon, country, state }]
 const CITIES_ENDPOINT = `${API_BASE}/cities`;
 const WEATHER_ENDPOINT = `${API_BASE}/weather`;
 
@@ -77,7 +76,6 @@ async function fetchSuggestions(query) {
     if (!res.ok) return [];
     return await res.json();
   } catch {
-    // Cities router not available yet — fail silently
     return [];
   }
 }
@@ -225,7 +223,7 @@ searchInput.addEventListener("input", () => {
 
   clearTimeout(debounceTimer);
 
-  if (q.length < 2) {
+  if (q.length < 3) {
     clearAutocomplete();
     return;
   }

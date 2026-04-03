@@ -15,7 +15,7 @@
   --accent: rgba(255, 255, 255, 0.9);
   --radius-pill: 50px;
   --radius-card: 20px;
-  --blur: blur(20px);
+  --blur: blur(12px);
   --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -125,25 +125,58 @@ body {
   width: 100%;
   max-width: 540px;
   position: relative;
+  z-index: 10; /* garante que o autocomplete fique acima do weather-info */
   animation: fadeDown 0.7s 0.1s ease both;
 }
 
 .search-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  background: var(--glass-bg);
+  /* background fica no ::before para não tocar no blur ao transicionar */
+  background: transparent;
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   padding: 6px 6px 6px 24px;
   gap: 8px;
-  transition:
-    border-color var(--transition-smooth),
-    background var(--transition-smooth);
+  transition: border-color var(--transition-smooth);
 }
 
-/* backdrop-filter: only applied when supported */
+/* Isolated blur to prevent flickering */
+.search-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--glass-bg);
+  transition: background var(--transition-smooth);
+  pointer-events: none;
+  z-index: -1;
+}
+
 @supports (backdrop-filter: blur(1px)) {
-  .search-wrapper,
+  .search-wrapper::before {
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .search-wrapper::before {
+    background: rgba(20, 17, 50, 0.88);
+  }
+}
+
+.search-wrapper:focus-within {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.search-wrapper:focus-within::before {
+  background: var(--glass-hover);
+}
+
+/* backdrop-filter */
+@supports (backdrop-filter: blur(1px)) {
   .autocomplete-list,
   .card,
   .error-msg {
@@ -152,11 +185,7 @@ body {
   }
 }
 
-/* Fallback for browsers without backdrop-filter */
 @supports not (backdrop-filter: blur(1px)) {
-  .search-wrapper {
-    background: rgba(20, 17, 50, 0.88);
-  }
   .autocomplete-list {
     background: rgba(15, 12, 41, 0.96);
   }
@@ -166,11 +195,6 @@ body {
   .error-msg {
     background: rgba(120, 30, 30, 0.88);
   }
-}
-
-.search-wrapper:focus-within {
-  border-color: rgba(255, 255, 255, 0.45);
-  background: var(--glass-hover);
 }
 
 #search-input {
@@ -219,7 +243,7 @@ body {
 
 .autocomplete-list {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 38px);
   left: 0;
   right: 0;
   list-style: none;
@@ -230,6 +254,10 @@ body {
   z-index: 100;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   animation: fadeUp 0.2s ease;
+  transform: translateZ(
+    0
+  ); /* promove para camada GPU própria — elimina flicker no hover */
+  isolation: isolate;
 }
 
 .autocomplete-list.hidden {
